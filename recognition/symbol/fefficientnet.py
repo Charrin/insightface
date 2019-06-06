@@ -337,8 +337,8 @@ def get_symbol():
     x = Conv2dSamePadding(data=x, out_channels=out_channels, kernel_size=(1,1), bias=False)
     x = mx.sym.BatchNorm(data=x, momentum=bn_mom, eps=bn_eps)
     x = relu_fn(x)
-    fc1 = mx.sym.Pooling(data=x, pool_type='avg', global_pool=True, kernel=(1,1), name="fc1")
-    fc1 = mx.sym.Flatten(data=fc1)
+    prefc1 = mx.sym.Pooling(data=x, pool_type='avg', global_pool=True, kernel=(1,1), name="prefc1")
+    fc1 = mx.sym.Flatten(data=prefc1, name="fc1")
 
     return fc1;
 
