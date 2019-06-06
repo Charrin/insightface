@@ -26,6 +26,7 @@ import fmobilefacenet
 import fmobilenet
 import fmnasnet
 import fdensenet
+import fefficientnet
 
 
 logger = logging.getLogger()
@@ -66,7 +67,7 @@ def get_symbol(args):
   gt_label = all_label
   is_softmax = True
   if config.loss_name=='softmax': #softmax
-    _weight = mx.symbol.Variable("fc7_weight", shape=(config.num_classes, config.emb_size), 
+    _weight = mx.symbol.Variable("fc7_weight", shape=(config.num_classes, config.emb_size),
         lr_mult=config.fc7_lr_mult, wd_mult=config.fc7_wd_mult, init=mx.init.Normal(0.01))
     if config.fc7_no_bias:
       fc7 = mx.sym.FullyConnected(data=embedding, weight = _weight, no_bias = True, num_hidden=config.num_classes, name='fc7')
@@ -74,7 +75,7 @@ def get_symbol(args):
       _bias = mx.symbol.Variable('fc7_bias', lr_mult=2.0, wd_mult=0.0)
       fc7 = mx.sym.FullyConnected(data=embedding, weight = _weight, bias = _bias, num_hidden=config.num_classes, name='fc7')
   elif config.loss_name=='margin_softmax':
-    _weight = mx.symbol.Variable("fc7_weight", shape=(config.num_classes, config.emb_size), 
+    _weight = mx.symbol.Variable("fc7_weight", shape=(config.num_classes, config.emb_size),
         lr_mult=config.fc7_lr_mult, wd_mult=config.fc7_wd_mult, init=mx.init.Normal(0.01))
     s = config.loss_s
     _weight = mx.symbol.L2Normalization(_weight, mode='instance')
@@ -142,6 +143,7 @@ def get_symbol(args):
   else:
     out_list.append(mx.sym.BlockGrad(gt_label))
     out_list.append(triplet_loss)
+
   out = mx.symbol.Group(out_list)
   return out
 
@@ -149,7 +151,8 @@ def train_net(args):
     ctx = []
     cvd = os.environ['CUDA_VISIBLE_DEVICES'].strip()
     if len(cvd)>0:
-      for i in range(len(cvd.split(','))):
+      # python2: for i in xrange(len(cvd.split(','))):
+      for i in xrange(len(cvd.split(','))):
         ctx.append(mx.gpu(i))
     if len(ctx)==0:
       ctx = [mx.cpu()]
@@ -194,6 +197,11 @@ def train_net(args):
       print('loading', args.pretrained, args.pretrained_epoch)
       _, arg_params, aux_params = mx.model.load_checkpoint(args.pretrained, args.pretrained_epoch)
       sym = get_symbol(args)
+
+    #mx.viz.plot_network(sym, shape={"data":(1, args.image_channel,image_size[0],image_size[1])}).view()
+    #input()
+    #mx.viz.print_summary(sym, shape={"data":(1, args.image_channel,image_size[0],image_size[1])})
+    #input()
 
     if config.count_flops:
       all_layers = sym.get_internals()
@@ -247,7 +255,7 @@ def train_net(args):
         metric2 = LossValueMetric()
         eval_metrics.append( mx.metric.create(metric2) )
 
-    if config.net_name=='fresnet' or config.net_name=='fmobilefacenet':
+    if config.net_name=='fresnet' or config.net_name=='fmobilefacenet' or config.net_name == 'fefficientnet':
       initializer = mx.init.Xavier(rnd_type='gaussian', factor_type="out", magnitude=2) #resnet style
     else:
       initializer = mx.init.Xavier(rnd_type='uniform', factor_type="in", magnitude=2)
@@ -270,7 +278,8 @@ def train_net(args):
 
     def ver_test(nbatch):
       results = []
-      for i in range(len(ver_list)):
+      # python2: for i in xrange(len(ver_list)):
+      for i in xrange(len(ver_list)):
         acc1, std1, acc2, std2, xnorm, embeddings_list = verification.test(ver_list[i], model, args.batch_size, 10, None, None)
         print('[%s][%d]XNorm: %f' % (ver_name_list[i], nbatch, xnorm))
         #print('[%s][%d]Accuracy: %1.5f+-%1.5f' % (ver_name_list[i], nbatch, acc1, std1))
@@ -281,7 +290,7 @@ def train_net(args):
 
 
     highest_acc = [0.0, 0.0]  #lfw and target
-    #for i in range(len(ver_list)):
+    #for i in xrange(len(ver_list)):
     #  highest_acc.append(0.0)
     global_step = [0]
     save_step = [0]
