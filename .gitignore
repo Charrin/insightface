@@ -102,3 +102,6 @@ ENV/
 
 # dataset
 datasets/
+
+recognition/nohup.out
+recognition/models

@@ -7,7 +7,7 @@ config = edict()
 config.bn_mom = 0.9
 config.workspace = 256
 config.emb_size = 512
-config.ckpt_embedding = True
+config.ckpt_embedding = False
 config.net_se = 0
 config.net_act = 'prelu'
 config.net_unit = 3
@@ -37,7 +37,7 @@ network.e0.net_name = 'fefficientnet'
 network.e0.arch = 'efficientnet-b0'
 network.e0.emb_size = 256
 network.e0.net_output = 'FC'
-network.e0.per_batch_size = 128
+network.e0.per_batch_size = 64
 
 network.e1 = edict()
 network.e1.net_name = 'fefficientnet-b1'
@@ -195,7 +195,7 @@ default.pretrained = ''
 default.pretrained_epoch = 1
 # default dataset
 default.dataset = 'retina'
-default.loss = 'arcface'
+default.loss = 'softmax'
 default.frequent = 1
 default.verbose = 100
 default.kvstore = 'device'
