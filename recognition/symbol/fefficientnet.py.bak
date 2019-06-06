@@ -321,8 +321,6 @@ def get_symbol():
 
     # Head
     in_channels = block_args.output_filters  # output of final block
-    # ori efficientnet
-    """
     out_channels = round_filters(1280, global_params)
     x = Conv2dSamePadding(data=x, out_channels=out_channels, kernel_size=(1,1), bias=False)
     x = mx.sym.BatchNorm(data=x, momentum=bn_mom, eps=bn_eps)
@@ -332,12 +330,6 @@ def get_symbol():
     if global_params.dropout_rate:
         x = mx.sym.Dropout(data=x, p=global_params.dropout_rate)
     fc1 = mx.sym.FullyConnected(data=x, num_hidden=config.emb_size, name='fc1')
-    """
-    out_channels = config.emb_size
-    x = Conv2dSamePadding(data=x, out_channels=out_channels, kernel_size=(1,1), bias=False)
-    x = mx.sym.BatchNorm(data=x, momentum=bn_mom, eps=bn_eps)
-    x = relu_fn(x)
-    fc1 = mx.sym.Pooling(data=x, pool_type='avg', global_pool=True, kernel=(1,1), name="fc1")
 
     return fc1;
 

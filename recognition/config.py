@@ -201,7 +201,7 @@ default.verbose = 100
 default.kvstore = 'device'
 
 default.end_epoch = 10000
-default.lr = 0.01
+default.lr = 0.1
 default.wd = 0.0005
 default.mom = 0.9
 default.per_batch_size = 128
