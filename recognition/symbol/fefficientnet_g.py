@@ -1,7 +1,11 @@
+import mxnet as mx
 from mxnet.gluon.block import HybridBlock
 from mxnet.gluon import nn
 from math import ceil
+import symbol_utils
 
+import sys
+import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from config import config
 
@@ -9,6 +13,7 @@ from config import config
 def _add_conv(out, channels=1, kernel=1, stride=1, pad=0,
               num_group=1, active=True):
     out.add(nn.Conv2D(channels, kernel, stride, pad, groups=num_group, use_bias=False))
+    print(nn.Conv2D(channels, kernel, stride, pad, groups=num_group, use_bias=False))
     out.add(nn.BatchNorm(scale=True, momentum=0.99, epsilon=1e-3))
     if active:
         out.add(nn.Swish())
@@ -24,6 +29,7 @@ class MBConv(nn.HybridBlock):
             _add_conv(self.out, in_channels * t, kernel=kernel, stride=stride,
                       pad=int((kernel-1)/2), num_group=in_channels * t, active=True)
             _add_conv(self.out, channels, active=False)
+
 
     def hybrid_forward(self, F, x):
         out = self.out(x)
@@ -119,7 +125,7 @@ def get_efficientnet(model_name):
     }
     width_coeff, depth_coeff, input_resolution, dropout_rate = params_dict[model_name]
     model = EfficientNet(alpha=depth_coeff, beta=width_coeff, dropout_rate=dropout_rate)
-    return model, input_resolution
+    return model#, input_resolution
 
 def get_symbol():
     arch=config.arch
@@ -128,5 +134,5 @@ def get_symbol():
     data = data-127.5
     data = data*0.0078125
     body = net(data)
-    fc1 = symbol_utils.get_fc1(body, config.emb_size, config.net_output)
+    fc1 = symbol_utils.get_fc1(body, config.emb_size, config.net_output, input_channel=320)
     return fc1

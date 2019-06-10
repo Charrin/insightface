@@ -27,6 +27,7 @@ import fmobilenet
 import fmnasnet
 import fdensenet
 import fefficientnet
+import fefficientnet_g
 
 
 logger = logging.getLogger()

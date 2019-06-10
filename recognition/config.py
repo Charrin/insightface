@@ -33,11 +33,11 @@ config.memonger = False #not work now
 network = edict()
 
 network.e0 = edict()
-network.e0.net_name = 'fefficientnet-g'
+network.e0.net_name = 'fefficientnet_g'
 network.e0.arch = 'efficientnet-b0'
 network.e0.emb_size = 256
 network.e0.net_output = 'GDC'
-network.e0.per_batch_size = 128
+network.e0.per_batch_size = 64
 
 network.e1 = edict()
 network.e1.net_name = 'fefficientnet-b1'
@@ -195,7 +195,7 @@ default.pretrained = ''
 default.pretrained_epoch = 1
 # default dataset
 default.dataset = 'retina'
-default.loss = 'softmax'
+default.loss = 'combined'
 default.frequent = 1
 default.verbose = 100
 default.kvstore = 'device'
