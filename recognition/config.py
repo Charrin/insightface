@@ -33,11 +33,11 @@ config.memonger = False #not work now
 network = edict()
 
 network.e0 = edict()
-network.e0.net_name = 'fefficientnet'
+network.e0.net_name = 'fefficientnet-g'
 network.e0.arch = 'efficientnet-b0'
 network.e0.emb_size = 256
-network.e0.net_output = 'FC'
-network.e0.per_batch_size = 64
+network.e0.net_output = 'GDC'
+network.e0.per_batch_size = 128
 
 network.e1 = edict()
 network.e1.net_name = 'fefficientnet-b1'
